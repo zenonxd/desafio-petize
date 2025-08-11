@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,16 +44,6 @@ public class TaskService {
         return taskMapper.toResponseDTO(savedTask);
     }
 
-    // Validação de entidade durante criação
-    private void validateEntity(Task task) {
-
-        if (taskRepository.existsByTitleAndDueDate(task.getTitle(), task.getDueDate())) {
-            throw new ValidateTaskException("A task with the same title and due date already exists.");
-        }
-
-    }
-
-
     public List<TaskResponseDTO> listTask(TaskStatus status, Integer priority, LocalDate dueDate) {
         Task exampleTask = new Task();
         exampleTask.setStatus(status);
@@ -67,5 +58,31 @@ public class TaskService {
                 .map(taskMapper::toResponseDTO)
                 .collect(Collectors.toList());
 
+    }
+
+    public TaskResponseDTO updateTask(Long id, @Valid UpdateTaskStatusRequestDTO dto) {
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new ValidateTaskException("Task not found"));
+
+        task.setStatus(dto.status());
+
+        Task updatedTask = taskRepository.save(task);
+
+        return taskMapper.toResponseDTO(updatedTask);
+    }
+
+    private void validateEntity(Task task) {
+
+        if (taskRepository.existsByTitleAndDueDate(task.getTitle(), task.getDueDate())) {
+            throw new ValidateTaskException("A task with the same title and due date already exists.");
+        }
+
+    }
+
+    public TaskResponseDTO findTaskById(Long id) {
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new ValidateTaskException("Task not found"));
+
+        return taskMapper.toResponseDTO(task);
     }
 }

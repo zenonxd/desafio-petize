@@ -51,13 +51,21 @@ public class TaskController {
         return ResponseEntity.ok(tasks);
     }
 
-//    @PatchMapping("/{id}/status")
-//    public ResponseEntity<TaskResponseDTO> updateTask(@PathVariable Long id,
-//                                                      @Valid @RequestBody UpdateTaskStatusRequestDTO dto) {
-//        TaskResponseDTO updatedTask = taskService.updateTask(id, dto);
-//
-//        return ResponseEntity.ok(updatedTask);
-//    }
+    @GetMapping("/{id}")
+    public ResponseEntity<TaskResponseDTO> findTaskById(@PathVariable Long id) {
+        TaskResponseDTO task = taskService.findTaskById(id);
+
+        return ResponseEntity.ok(task);
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<TaskResponseDTO> updateTask(@PathVariable Long id,
+                                                      @Valid @RequestBody UpdateTaskStatusRequestDTO dto) {
+
+        TaskResponseDTO updatedTask = taskService.updateTask(id, dto);
+
+        return ResponseEntity.ok(updatedTask);
+    }
 //
 //    @DeleteMapping("/{id}")
 //    public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
