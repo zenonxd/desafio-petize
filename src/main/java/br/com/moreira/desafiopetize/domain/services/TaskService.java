@@ -85,4 +85,8 @@ public class TaskService {
 
         return taskMapper.toResponseDTO(task);
     }
+
+    public void deleteTask(Long id) {
+        taskRepository.deleteById(id);
+    }
 }
