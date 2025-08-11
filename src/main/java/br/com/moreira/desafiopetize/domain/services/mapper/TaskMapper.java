@@ -3,7 +3,9 @@ package br.com.moreira.desafiopetize.domain.services.mapper;
 import br.com.moreira.desafiopetize.domain.entities.Task;
 import br.com.moreira.desafiopetize.interfaces.dtos.CreateTaskRequestDto;
 import br.com.moreira.desafiopetize.interfaces.dtos.TaskResponseDTO;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TaskMapper {
 
     public Task toEntity(CreateTaskRequestDto dto) {

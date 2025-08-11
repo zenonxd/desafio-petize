@@ -3,6 +3,7 @@ package br.com.moreira.desafiopetize.domain.entities;
 import br.com.moreira.desafiopetize.domain.enums.TaskStatus;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -15,15 +16,17 @@ public class Task {
 
     private String title;
     private String description;
-    private Enum<TaskStatus> status;
+
+    @Enumerated(EnumType.STRING)
+    private TaskStatus status;
     private Integer priority;
-    private Date dueDate;
+    private LocalDate dueDate;
 
     public Task() {}
 
 
 
-    public Task(String title, String description, Enum<TaskStatus> status, Integer priority, Date dueDate) {
+    public Task(String title, String description, TaskStatus status, Integer priority, LocalDate dueDate) {
         this.title = title;
         this.description = description;
         this.status = status;
@@ -55,11 +58,11 @@ public class Task {
         this.description = description;
     }
 
-    public Enum<TaskStatus> getStatus() {
+    public TaskStatus getStatus() {
         return status;
     }
 
-    public void setStatus(Enum<TaskStatus> status) {
+    public void setStatus(TaskStatus status) {
         this.status = status;
     }
 
@@ -71,11 +74,11 @@ public class Task {
         this.priority = priority;
     }
 
-    public Date getDueDate() {
+    public LocalDate getDueDate() {
         return dueDate;
     }
 
-    public void setDueDate(Date dueDate) {
+    public void setDueDate(LocalDate dueDate) {
         this.dueDate = dueDate;
     }
 }

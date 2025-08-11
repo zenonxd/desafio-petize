@@ -4,6 +4,7 @@ import br.com.moreira.desafiopetize.domain.enums.TaskStatus;
 import jakarta.validation.constraints.*;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -14,9 +15,9 @@ public record CreateTaskRequestDto(
         @NotNull(message = "Description can't be null.") @Size(message = "Description must have more than 5 characters.", min = 5) @NotEmpty(message = "Description can't be empty.") @NotBlank(message = "Description can't be blank.") String description,
         @NotNull(message = "Status can't be null.") TaskStatus status,
         @NotNull(message = "Priority can't be null.") @Positive(message = "Only positive number allowed.") Integer priority,
-        @NotNull(message = "Date can't be null.") @FutureOrPresent Date dueDate) implements Serializable {
+        @NotNull(message = "Date can't be null.") @FutureOrPresent LocalDate dueDate) implements Serializable {
 
-    public CreateTaskRequestDto(String title, String description, TaskStatus status, Integer priority, Date dueDate) {
+    public CreateTaskRequestDto(String title, String description, TaskStatus status, Integer priority, LocalDate dueDate) {
         this.title = title;
         this.description = description;
         this.status = status;
@@ -45,7 +46,7 @@ public record CreateTaskRequestDto(
     }
 
     @Override
-    public Date dueDate() {
+    public LocalDate dueDate() {
         return dueDate;
     }
 

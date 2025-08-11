@@ -7,8 +7,16 @@ import br.com.moreira.desafiopetize.domain.services.mapper.TaskMapper;
 import br.com.moreira.desafiopetize.exceptions.ValidateTaskException;
 import br.com.moreira.desafiopetize.interfaces.dtos.CreateTaskRequestDto;
 import br.com.moreira.desafiopetize.interfaces.dtos.TaskResponseDTO;
+import br.com.moreira.desafiopetize.interfaces.dtos.UpdateTaskStatusRequestDTO;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TaskService {
@@ -41,6 +49,23 @@ public class TaskService {
         if (taskRepository.existsByTitleAndDueDate(task.getTitle(), task.getDueDate())) {
             throw new ValidateTaskException("A task with the same title and due date already exists.");
         }
+
+    }
+
+
+    public List<TaskResponseDTO> listTask(TaskStatus status, Integer priority, LocalDate dueDate) {
+        Task exampleTask = new Task();
+        exampleTask.setStatus(status);
+        exampleTask.setPriority(priority);
+        exampleTask.setDueDate(dueDate);
+
+        Example<Task> example = Example.of(exampleTask);
+
+        List<Task> tasks = taskRepository.findAll(example);
+
+        return tasks.stream()
+                .map(taskMapper::toResponseDTO)
+                .collect(Collectors.toList());
 
     }
 }
