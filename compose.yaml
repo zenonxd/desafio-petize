@@ -1,9 +1,16 @@
+version: '3.8'
+
 services:
   postgres:
     image: 'postgres:latest'
+    container_name: 'petize-db'
     environment:
-      - 'POSTGRES_DB=mydatabase'
-      - 'POSTGRES_PASSWORD=secret'
-      - 'POSTGRES_USER=myuser'
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=6497
+      - POSTGRES_DB=petize
     ports:
-      - '5432'
+      - '5433:5432'
+    volumes:
+      - petize-data:/var/lib/postgresql/data
+volumes:
+  petize-data:
