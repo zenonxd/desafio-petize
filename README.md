@@ -18,15 +18,11 @@
 
 - Associações de tarefas por usuário autenticado.
 
-
 ~~- Validação com @Valid e mensagens claras.~~
-
 
 - Documentação com Swagger ou README completo.
 
-
 - Testes unitários e de integração.
-
 
 ~~- Docker Compose com banco de dados.~~
 
