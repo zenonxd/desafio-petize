@@ -10,6 +10,8 @@ public record TaskResponseDTO(
         String description,
         Enum<TaskStatus> status,
         Integer priority,
-        LocalDate dueDate
+        LocalDate dueDate,
+        Long userId,
+        String username
 ) {
 }

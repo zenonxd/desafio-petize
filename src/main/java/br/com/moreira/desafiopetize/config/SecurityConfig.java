@@ -25,7 +25,9 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
 @Configuration
+
 @EnableWebSecurity
+
 public class SecurityConfig {
 
     @Value("${jwt.public.key}")
@@ -33,6 +35,12 @@ public class SecurityConfig {
 
     @Value("${jwt.private.key}")
     private RSAPrivateKey priv;
+
+    private final JwtToUserConverter jwtToUserConverter;
+
+    public SecurityConfig(JwtToUserConverter jwtToUserConverter) {
+        this.jwtToUserConverter = jwtToUserConverter;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -42,17 +50,17 @@ public class SecurityConfig {
                                 .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .oauth2ResourceServer(
-                        conf -> conf.jwt(Customizer.withDefaults()));
-
+                        conf -> conf.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtToUserConverter)));
         return http.build();
     }
 
     @Bean
     public JwtDecoder jwtDecoder() {
-        // usando chave publica para decodificar o token jwt
+    // usando chave publica para decodificar o token jwt
         return NimbusJwtDecoder.withPublicKey(key).build();
-
     }
+
+
 
     @Bean
     public JwtEncoder jwtEncoder() {
@@ -63,6 +71,8 @@ public class SecurityConfig {
         return new NimbusJwtEncoder(jwks);
     }
 
+
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -72,4 +82,5 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
+
 }

@@ -1,5 +1,6 @@
 package br.com.moreira.desafiopetize.interfaces.controllers;
 
+import br.com.moreira.desafiopetize.domain.entities.User;
 import br.com.moreira.desafiopetize.domain.enums.TaskStatus;
 import br.com.moreira.desafiopetize.domain.services.TaskService;
 import br.com.moreira.desafiopetize.interfaces.dtos.CreateTaskRequestDto;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -28,8 +30,12 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<TaskResponseDTO> createTask(@Valid @RequestBody CreateTaskRequestDto dto) {
-        TaskResponseDTO newTask = taskService.createTask(dto);
+    public ResponseEntity<TaskResponseDTO> createTask(@Valid @RequestBody CreateTaskRequestDto dto,
+                                                      Authentication authentication) {
+
+        User loggedUser = (User) authentication.getPrincipal();
+
+        TaskResponseDTO newTask = taskService.createTask(dto, loggedUser);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -42,11 +48,14 @@ public class TaskController {
 
     @GetMapping
     public ResponseEntity<List<TaskResponseDTO>> listTask(
+            Authentication authentication,
             @RequestParam(required = false) TaskStatus status,
             @RequestParam(required = false) Integer priority,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate dueDate) {
 
-        List<TaskResponseDTO> tasks = taskService.listTask(status, priority, dueDate);
+        User loggedUser = (User) authentication.getPrincipal();
+
+        List<TaskResponseDTO> tasks = taskService.listTask(status, priority, dueDate, loggedUser);
 
         return ResponseEntity.ok(tasks);
     }

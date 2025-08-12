@@ -33,7 +33,9 @@ public class TaskMapper {
                 entity.getDescription(),
                 entity.getStatus(),
                 entity.getPriority(),
-                entity.getDueDate()
+                entity.getDueDate(),
+                entity.getUser().getId(),
+                entity.getUser().getUsername()
         );
     }
 }
