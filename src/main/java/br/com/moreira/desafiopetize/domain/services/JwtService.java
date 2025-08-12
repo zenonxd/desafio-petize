@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 @Service
 public class JwtService {
 
+    // Responsável por criar um crachá para o usuário
+
     private final JwtEncoder encoder;
 
     public JwtService(JwtEncoder encoder) {
