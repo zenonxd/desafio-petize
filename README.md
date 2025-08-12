@@ -1,12 +1,12 @@
 # Funcionalidades Obrigatórias:
 
-- Criar tarefa com título, descrição, data de vencimento, status e prioridade.
+~~- Criar tarefa com título, descrição, data de vencimento, status e prioridade.~~
 
-- Listar tarefas com filtros por status, prioridade e vencimento.
+~~- Listar tarefas com filtros por status, prioridade e vencimento.~~
 
-- Atualizar o status da tarefa.
+~~- Atualizar o status da tarefa.~~
 
-- Deletar tarefa.
+~~- Deletar tarefa.~~
 
 - Impedir conclusão de tarefa com subtarefas pendentes.
 
@@ -42,5 +42,4 @@
 
 - Terminar CRUD
 - Inserir mais validações na camada service
-- Alterar Date para LocalDateTime (entity)
 
