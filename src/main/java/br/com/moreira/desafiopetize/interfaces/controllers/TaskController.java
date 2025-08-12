@@ -47,15 +47,16 @@ public class TaskController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TaskResponseDTO>> listTask(
+    public ResponseEntity<Page<TaskResponseDTO>> listTask(
             Authentication authentication,
             @RequestParam(required = false) TaskStatus status,
             @RequestParam(required = false) Integer priority,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate dueDate) {
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate dueDate,
+            Pageable pageable) {
 
         User loggedUser = (User) authentication.getPrincipal();
 
-        List<TaskResponseDTO> tasks = taskService.listTask(status, priority, dueDate, loggedUser);
+        Page<TaskResponseDTO> tasks = taskService.listTask(status, priority, dueDate, loggedUser, pageable);
 
         return ResponseEntity.ok(tasks);
     }

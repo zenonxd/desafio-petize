@@ -5,6 +5,9 @@ import br.com.moreira.desafiopetize.domain.entities.User;
 import br.com.moreira.desafiopetize.domain.enums.TaskStatus;
 import br.com.moreira.desafiopetize.domain.repositories.TaskRepository;
 import br.com.moreira.desafiopetize.domain.services.mapper.TaskMapper;
+import br.com.moreira.desafiopetize.exceptions.ParentTaskNotFoundException;
+import br.com.moreira.desafiopetize.exceptions.PendentSubtaskException;
+import br.com.moreira.desafiopetize.exceptions.TaskNotFoundException;
 import br.com.moreira.desafiopetize.exceptions.ValidateTaskException;
 import br.com.moreira.desafiopetize.interfaces.dtos.CreateTaskRequestDto;
 import br.com.moreira.desafiopetize.interfaces.dtos.TaskResponseDTO;
@@ -12,6 +15,8 @@ import br.com.moreira.desafiopetize.interfaces.dtos.UpdateTaskStatusRequestDTO;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -39,7 +44,7 @@ public class TaskService {
 
         if (dto.parentId() != null) {
             Task parentTask = taskRepository.findById(dto.parentId())
-                    .orElseThrow(() -> new ValidateTaskException("Parent task not found with id: " + dto.parentId()));
+                    .orElseThrow(() -> new ParentTaskNotFoundException("Parent task not found with id: " + dto.parentId()));
             newTask.setParentTask(parentTask);
         }
 
@@ -50,7 +55,9 @@ public class TaskService {
         return taskMapper.toResponseDTO(savedTask);
     }
 
-    public List<TaskResponseDTO> listTask(TaskStatus status, Integer priority, LocalDate dueDate, User loggedUser) {
+    public Page<TaskResponseDTO> listTask(TaskStatus status, Integer priority,
+                                          LocalDate dueDate, User loggedUser,
+                                          Pageable pageable) {
         Task exampleTask = new Task();
         exampleTask.setStatus(status);
         exampleTask.setPriority(priority);
@@ -60,11 +67,9 @@ public class TaskService {
 
         Example<Task> example = Example.of(exampleTask);
 
-        List<Task> tasks = taskRepository.findAll(example);
+        Page<Task> tasksPage = taskRepository.findAll(example, pageable);
 
-        return tasks.stream()
-                .map(taskMapper::toResponseDTO)
-                .collect(Collectors.toList());
+        return tasksPage.map(taskMapper::toResponseDTO);
 
     }
 
@@ -72,7 +77,7 @@ public class TaskService {
     public TaskResponseDTO updateTask(Long id, TaskStatus newStatus) {
         //arrumar excep
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new ValidateTaskException("Task not found"));
+                .orElseThrow(() -> new TaskNotFoundException("Task not found."));
 
         if (newStatus == TaskStatus.COMPLETED) {
 
@@ -83,7 +88,7 @@ public class TaskService {
 
             if (hasPendentTask) {
                 //arrumar excep
-                throw new ValidateTaskException("Não é possível concluir a tarefa, pois ela possui subtarefas pendentes.");
+                throw new PendentSubtaskException("You cannot complete this task because it has pending subtasks.");
             }
         }
 
@@ -104,7 +109,7 @@ public class TaskService {
 
     public TaskResponseDTO findTaskById(Long id) {
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new ValidateTaskException("Task not found"));
+                .orElseThrow(() -> new TaskNotFoundException("Task not found"));
 
         return taskMapper.toResponseDTO(task);
     }
