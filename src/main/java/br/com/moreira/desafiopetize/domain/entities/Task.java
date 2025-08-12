@@ -1,10 +1,14 @@
 package br.com.moreira.desafiopetize.domain.entities;
 
 import br.com.moreira.desafiopetize.domain.enums.TaskStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "tb_task")
@@ -25,6 +29,19 @@ public class Task {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    @JsonBackReference // so pra evitar loop de serializacao
+    private Task parentTask;
+
+    @OneToMany(
+            mappedBy = "parentTask",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @JsonManagedReference // evita loop tambem
+    private List<Task> subTask = new ArrayList<>();
 
     public Task() {}
 
@@ -92,5 +109,21 @@ public class Task {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Task getParentTask() {
+        return parentTask;
+    }
+
+    public void setParentTask(Task parentTask) {
+        this.parentTask = parentTask;
+    }
+
+    public List<Task> getSubTask() {
+        return subTask;
+    }
+
+    public void setSubTask(List<Task> subTask) {
+        this.subTask = subTask;
     }
 }

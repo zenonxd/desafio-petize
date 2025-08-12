@@ -71,7 +71,7 @@ public class TaskController {
     public ResponseEntity<TaskResponseDTO> updateTask(@PathVariable Long id,
                                                       @Valid @RequestBody UpdateTaskStatusRequestDTO dto) {
 
-        TaskResponseDTO updatedTask = taskService.updateTask(id, dto);
+        TaskResponseDTO updatedTask = taskService.updateTask(id, dto.status());
 
         return ResponseEntity.ok(updatedTask);
     }

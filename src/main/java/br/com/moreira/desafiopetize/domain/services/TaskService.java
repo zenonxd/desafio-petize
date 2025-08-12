@@ -9,6 +9,7 @@ import br.com.moreira.desafiopetize.exceptions.ValidateTaskException;
 import br.com.moreira.desafiopetize.interfaces.dtos.CreateTaskRequestDto;
 import br.com.moreira.desafiopetize.interfaces.dtos.TaskResponseDTO;
 import br.com.moreira.desafiopetize.interfaces.dtos.UpdateTaskStatusRequestDTO;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
@@ -34,8 +35,13 @@ public class TaskService {
         Task newTask = taskMapper.toEntity(dto);
 
         newTask.setStatus(TaskStatus.PENDENT);
-
         newTask.setUser(loggedUser);
+
+        if (dto.parentId() != null) {
+            Task parentTask = taskRepository.findById(dto.parentId())
+                    .orElseThrow(() -> new ValidateTaskException("Parent task not found with id: " + dto.parentId()));
+            newTask.setParentTask(parentTask);
+        }
 
         validateEntity(newTask);
 
@@ -62,11 +68,26 @@ public class TaskService {
 
     }
 
-    public TaskResponseDTO updateTask(Long id, @Valid UpdateTaskStatusRequestDTO dto) {
+    @Transactional
+    public TaskResponseDTO updateTask(Long id, TaskStatus newStatus) {
+        //arrumar excep
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new ValidateTaskException("Task not found"));
 
-        task.setStatus(dto.status());
+        if (newStatus == TaskStatus.COMPLETED) {
+
+            boolean hasPendentTask = taskRepository.existsByParentTaskAndStatusNot(
+                    task,
+                    TaskStatus.COMPLETED
+            );
+
+            if (hasPendentTask) {
+                //arrumar excep
+                throw new ValidateTaskException("Não é possível concluir a tarefa, pois ela possui subtarefas pendentes.");
+            }
+        }
+
+        task.setStatus(newStatus);
 
         Task updatedTask = taskRepository.save(task);
 

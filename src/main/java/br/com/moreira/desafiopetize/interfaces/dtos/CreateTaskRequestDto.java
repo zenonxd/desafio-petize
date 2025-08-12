@@ -13,16 +13,16 @@ import java.util.Date;
 public record CreateTaskRequestDto(
         @NotNull(message = "Title can't be null.") @NotEmpty(message = "Title can't be empty.") @NotBlank(message = "Title can't be blank.") String title,
         @NotNull(message = "Description can't be null.") @Size(message = "Description must have more than 5 characters.", min = 5) @NotEmpty(message = "Description can't be empty.") @NotBlank(message = "Description can't be blank.") String description,
-        @NotNull(message = "Status can't be null.") TaskStatus status,
         @NotNull(message = "Priority can't be null.") @Positive(message = "Only positive number allowed.") Integer priority,
-        @NotNull(message = "Date can't be null.") @FutureOrPresent LocalDate dueDate) implements Serializable {
+        @NotNull(message = "Date can't be null.") @FutureOrPresent LocalDate dueDate,
+        Long parentId) implements Serializable {
 
-    public CreateTaskRequestDto(String title, String description, TaskStatus status, Integer priority, LocalDate dueDate) {
+    public CreateTaskRequestDto(String title, String description, Integer priority, LocalDate dueDate, Long parentId) {
         this.title = title;
         this.description = description;
-        this.status = status;
         this.priority = priority;
         this.dueDate = dueDate;
+        this.parentId = parentId;
     }
 
     @Override
@@ -35,10 +35,6 @@ public record CreateTaskRequestDto(
         return description;
     }
 
-    @Override
-    public TaskStatus status() {
-        return status;
-    }
 
     @Override
     public Integer priority() {
@@ -51,12 +47,19 @@ public record CreateTaskRequestDto(
     }
 
     @Override
+    public Long parentId() {
+        return parentId;
+    }
+
+
+    @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" +
-                "title = " + title + ", " +
-                "description = " + description + ", " +
-                "status = " + status + ", " +
-                "priority = " + priority + ", " +
-                "dueDate = " + dueDate + ")";
+        return "CreateTaskRequestDto{" +
+                "title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", priority=" + priority +
+                ", dueDate=" + dueDate +
+                ", parentId=" + parentId +
+                '}';
     }
 }

@@ -13,4 +13,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     boolean existsByTitleAndDueDate(String title, LocalDate dueDate);
 
     List<Task> findByUser(User user);
+
+    boolean existsByParentTaskAndStatusNot(Task parentTask, TaskStatus status);
 }
