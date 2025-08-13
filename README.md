@@ -40,9 +40,9 @@ Web Tokens (JWT), construída com Java e Spring Boot.
 
 * CRUD completo de Tarefas.
 * Sistema de autenticação via JWT (Login com username e password).
-* Autorização baseada em Roles (ADMIN, USER) para proteger os endpoints.
 * Gerenciamento de subtarefas com relacionamento pai-filho.
 * Regra de negócio para impedir a conclusão de tarefas com subtarefas pendentes.
+* Um usuário quando logado não pode alterar tarefas/sub tarefas de outro usuário.
 * Filtros para listagem de tarefas (status, prioridade, data).
 * Estrutura de banco de dados gerenciada com Flyway Migrations.
 * Ambiente de banco de dados isolado com Docker Compose.
@@ -71,7 +71,7 @@ Antes de começar, garanta que você tem as seguintes ferramentas instaladas:
 * JDK 21 (LTS) (Recomendado Eclipse Temurin)
 * Docker Desktop
 * Apache Maven (ou use o Maven Wrapper incluído no projeto)
-* Uma IDE de sua preferência (ex: IntelliJ IDEA, VS Code
+* Uma IDE de sua preferência (ex: IntelliJ IDEA, VS Code)
 
 2. Clonando o Repositório
 
@@ -94,6 +94,11 @@ docker-compose up -d
 
 Este comando irá iniciar o container do PostgreSQL em segundo plano. Na primeira vez, ele pode demorar um pouco para baixar a imagem.
 
+```textmate
+username: postgres
+password: postgres
+```
+
 **Para garantir que não exista nenhum problema para acessar o PostgreSQL, minha versão é 16 e porta 5433.**
 
 4. Executando a Aplicação
@@ -113,9 +118,12 @@ requisição.**
 
 1. Autenticação (Login)
 
-Já deixei um script onde o Flyway criei um usuário de teste. A senha é 123456 (este valor está em hash na tabela).
+Já deixei um script onde o Flyway criei dois usuários de teste. A senha é 123456 para ambos usuários (este valor está em hash na tabela).
 
+```textmate
 Usuário 1: username1
+Usuário 2: admin
+```
 
 **Faça uma requisição POST para o endpoint de login para obter seu token de acesso.**
 

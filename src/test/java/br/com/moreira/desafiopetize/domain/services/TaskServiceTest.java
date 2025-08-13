@@ -3,8 +3,11 @@ package br.com.moreira.desafiopetize.domain.services;
 
 import br.com.moreira.desafiopetize.domain.entities.Task;
 import br.com.moreira.desafiopetize.domain.entities.User;
+import br.com.moreira.desafiopetize.domain.enums.TaskStatus;
 import br.com.moreira.desafiopetize.domain.repositories.TaskRepository;
+import br.com.moreira.desafiopetize.domain.repositories.UserRepository;
 import br.com.moreira.desafiopetize.domain.services.mapper.TaskMapper;
+import br.com.moreira.desafiopetize.exceptions.PendentSubtaskException;
 import br.com.moreira.desafiopetize.interfaces.dtos.CreateTaskRequestDto;
 import br.com.moreira.desafiopetize.interfaces.dtos.TaskResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,8 +20,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -27,6 +31,9 @@ public class TaskServiceTest {
 
     @Mock
     private TaskRepository taskRepository;
+
+    @Mock
+    private UserRepository userRepository;
 
     @Mock
     private TaskMapper taskMapper;
@@ -68,5 +75,24 @@ public class TaskServiceTest {
         assertNotNull(result);
         assertEquals(taskResponseDTO.id(), result.id());
         assertEquals("Teste", result.title());
+    }
+
+    @Test
+    @DisplayName("Should throw exception when trying to finish a task with pendent subtasks")
+    void updateTaskStatus_ShouldThrowException_WhenSubtasksPending() {
+        Task parentTask = new Task();
+        parentTask.setId(1L);
+        parentTask.setUser(user);
+
+        when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
+
+
+        when(taskRepository.findById(1L)).thenReturn(Optional.of(parentTask));
+
+        when(taskRepository.existsByParentTaskAndStatusNot(parentTask, TaskStatus.COMPLETED)).thenReturn(true);
+
+        assertThrows(PendentSubtaskException.class, () -> {
+            taskService.updateTask(1L, TaskStatus.COMPLETED, user.getUsername());
+        });
     }
 }
