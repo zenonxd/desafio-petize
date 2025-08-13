@@ -8,11 +8,13 @@ import br.com.moreira.desafiopetize.interfaces.dtos.CreateTaskRequestDto;
 import br.com.moreira.desafiopetize.interfaces.dtos.TaskResponseDTO;
 import br.com.moreira.desafiopetize.interfaces.dtos.UpdateTaskStatusRequestDTO;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -35,11 +37,11 @@ public class TaskController {
     }
 
     @PostMapping
-    @Operation(summary = "Create a new task", description = "Create a new task to a User that has authorization.")
+    @Operation(summary = "Create a new parent task.", description = "Create a new task to a User that has authorization.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Task created successfully."),
-            @ApiResponse(responseCode = "400", description = "Bad request."),
-            @ApiResponse(responseCode = "401", description = "Unauthorized."),
+            @ApiResponse(responseCode = "400", description = "Bad request. Invalid data."),
+            @ApiResponse(responseCode = "403", description = "Unauthorized."),
     })
     public ResponseEntity<TaskResponseDTO> createTask(@Valid @RequestBody CreateTaskRequestDto dto,
                                                       Authentication authentication) {
@@ -83,12 +85,14 @@ public class TaskController {
         return ResponseEntity.created(location).body(newSubtask);
     }
 
+
     @GetMapping
+    @Operation(summary = "List the user tasks.", description = "Returns a pageable list that belongs to the User, with optional filters.")
     public ResponseEntity<Page<TaskResponseDTO>> listTask(
             Authentication authentication,
-            @RequestParam(required = false) TaskStatus status,
-            @RequestParam(required = false) Integer priority,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate dueDate,
+            @Parameter(description = "Filter per status") @RequestParam(required = false) TaskStatus status,
+            @Parameter(description = "Filter per priority") @RequestParam(required = false) Integer priority,
+            @Parameter(description = "Filter per due date") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dueDate,
             Pageable pageable) {
 
         User loggedUser = (User) authentication.getPrincipal();
@@ -99,6 +103,12 @@ public class TaskController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Search a task by ID.", description = "Returns a task that belongs to the User")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Task found."),
+            @ApiResponse(responseCode = "401", description = "Unauthorized."),
+            @ApiResponse(responseCode = "404", description = "Task not found."),
+    })
     public ResponseEntity<TaskResponseDTO> findTaskById(@PathVariable Long id) {
         TaskResponseDTO task = taskService.findTaskById(id);
 
@@ -106,8 +116,16 @@ public class TaskController {
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<TaskResponseDTO> updateTask(@PathVariable Long id,
-                                                      @Valid @RequestBody UpdateTaskStatusRequestDTO dto) {
+    @Operation(summary = "Update the task status.", description = "Needs Auth")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Task updated successfully."),
+            @ApiResponse(responseCode = "400", description = "Invalid Data."),
+            @ApiResponse(responseCode = "403", description = "Unauthorized."),
+            @ApiResponse(responseCode = "404", description = "Task not found."),
+    })
+    public ResponseEntity<TaskResponseDTO> updateTask(
+            @Parameter(description = "Task ID to be updated") @PathVariable Long id,
+            @Valid @RequestBody UpdateTaskStatusRequestDTO dto) {
 
         TaskResponseDTO updatedTask = taskService.updateTask(id, dto.status());
 
@@ -115,6 +133,12 @@ public class TaskController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Deletes a task.", description = "Needs Auth")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Task deleted successfully."),
+            @ApiResponse(responseCode = "403", description = "Unauthorized."),
+            @ApiResponse(responseCode = "404", description = "Task not found."),
+    })
     public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
         taskService.deleteTask(id);
 
@@ -122,6 +146,7 @@ public class TaskController {
     }
 
     @PostMapping("/{id}/attachments")
+    @Operation(summary = "Upload a file to a task", description = "Needs Auth")
     public ResponseEntity<String> uploadAttachment(@PathVariable Long id,
                                                    @RequestParam("file")MultipartFile file,
                                                    Authentication authentication) {
