@@ -6,7 +6,7 @@ services:
     container_name: 'petize-db'
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=6497
+      - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=petize
     ports:
       - '5433:5432'

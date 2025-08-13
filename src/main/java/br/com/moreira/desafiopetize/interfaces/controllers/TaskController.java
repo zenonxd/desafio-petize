@@ -46,7 +46,7 @@ public class TaskController {
     public ResponseEntity<TaskResponseDTO> createTask(@Valid @RequestBody CreateTaskRequestDto dto,
                                                       Authentication authentication) {
 
-        User loggedUser = (User) authentication.getPrincipal();
+        String loggedUser = authentication.getName();
 
         TaskResponseDTO newTask = taskService.createTask(dto, loggedUser);
 
@@ -72,7 +72,7 @@ public class TaskController {
             @Valid @RequestBody CreateSubTaskDTO dto,
             Authentication authentication) {
 
-        User loggedUser = (User) authentication.getPrincipal();
+        String loggedUser = authentication.getName();
 
         TaskResponseDTO newSubtask = taskService.createSubtask(parentId, dto, loggedUser);
 
@@ -95,7 +95,7 @@ public class TaskController {
             @Parameter(description = "Filter per due date") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dueDate,
             Pageable pageable) {
 
-        User loggedUser = (User) authentication.getPrincipal();
+        String loggedUser = authentication.getName();
 
         Page<TaskResponseDTO> tasks = taskService.listTask(status, priority, dueDate, loggedUser, pageable);
 
@@ -109,8 +109,14 @@ public class TaskController {
             @ApiResponse(responseCode = "401", description = "Unauthorized."),
             @ApiResponse(responseCode = "404", description = "Task not found."),
     })
-    public ResponseEntity<TaskResponseDTO> findTaskById(@PathVariable Long id) {
-        TaskResponseDTO task = taskService.findTaskById(id);
+    public ResponseEntity<TaskResponseDTO> findTaskById(
+            @PathVariable Long id,
+            Authentication authentication) {
+
+        String username = authentication.getName();
+
+
+        TaskResponseDTO task = taskService.findTaskById(id, username);
 
         return ResponseEntity.ok(task);
     }
@@ -125,9 +131,13 @@ public class TaskController {
     })
     public ResponseEntity<TaskResponseDTO> updateTask(
             @Parameter(description = "Task ID to be updated") @PathVariable Long id,
-            @Valid @RequestBody UpdateTaskStatusRequestDTO dto) {
+            @Valid @RequestBody UpdateTaskStatusRequestDTO dto,
+            Authentication authentication) {
 
-        TaskResponseDTO updatedTask = taskService.updateTask(id, dto.status());
+        String username = authentication.getName();
+
+
+        TaskResponseDTO updatedTask = taskService.updateTask(id, dto.status(), username);
 
         return ResponseEntity.ok(updatedTask);
     }
@@ -139,8 +149,11 @@ public class TaskController {
             @ApiResponse(responseCode = "403", description = "Unauthorized."),
             @ApiResponse(responseCode = "404", description = "Task not found."),
     })
-    public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
-        taskService.deleteTask(id);
+    public ResponseEntity<Void> deleteTask(@PathVariable Long id, Authentication authentication) {
+        String username = authentication.getName();
+
+
+        taskService.deleteTask(id, username);
 
         return ResponseEntity.noContent().build();
     }
@@ -150,7 +163,8 @@ public class TaskController {
     public ResponseEntity<String> uploadAttachment(@PathVariable Long id,
                                                    @RequestParam("file")MultipartFile file,
                                                    Authentication authentication) {
-        User loggedUser = (User) authentication.getPrincipal();
+
+        String loggedUser = authentication.getName();
 
         taskService.storeAttachment(id, file, loggedUser);
 

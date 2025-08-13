@@ -19,7 +19,7 @@
 
 ~~- Validação com @Valid e mensagens claras.~~
 
-- Documentação com Swagger ou README completo.
+~~- Documentação com Swagger ou README completo.~~
 
 - Testes unitários e de integração.
 
@@ -30,10 +30,6 @@
 # Entrega:
 
 - Vídeo explicativo (opcional).
-
-# To-do (meus)
-
-- Inserir mais validações na camada service
 
 # Desafio Petize - API de Gerenciamento de Tarefas
 
@@ -55,9 +51,10 @@ Web Tokens (JWT), construída com Java e Spring Boot.
 ## 🛠️ Tecnologias Utilizadas
 
 * Java 21
-* Spring Boot 3.x
-* Spring Security 6.x: Para autenticação e autorização.
+* Spring Boot 3.5.2
+* Spring Security: Para autenticação e autorização.
 * Spring Data JPA / Hibernate: Para persistência de dados.
+* Spring Swagger 2.7.0: Para documentação.
 * PostgreSQL: Banco de dados relacional.
 * Docker & Docker Compose: Para containerização do banco de dados.
 * Flyway: Para gerenciamento de migrações do banco de dados.
@@ -76,7 +73,7 @@ Antes de começar, garanta que você tem as seguintes ferramentas instaladas:
 * Apache Maven (ou use o Maven Wrapper incluído no projeto)
 * Uma IDE de sua preferência (ex: IntelliJ IDEA, VS Code
 
-2.  Clonando o Repositório
+2. Clonando o Repositório
 
 Abra seu terminal e clone o projeto para sua máquina local:
 
@@ -116,11 +113,9 @@ requisição.**
 
 1. Autenticação (Login)
 
-Já deixei um script onde o Flyway criou dois usuários de teste. A senha para ambos é 123456 (este valor está em hash).
+Já deixei um script onde o Flyway criei um usuário de teste. A senha é 123456 (este valor está em hash na tabela).
 
-Usuário 1: username1 (Role: ADMIN)
-
-Usuário 2: username2 (Role: USER)
+Usuário 1: username1
 
 **Faça uma requisição POST para o endpoint de login para obter seu token de acesso.**
 

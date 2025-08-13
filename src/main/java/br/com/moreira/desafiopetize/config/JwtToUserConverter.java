@@ -2,6 +2,8 @@ package br.com.moreira.desafiopetize.config;
 
 import br.com.moreira.desafiopetize.domain.entities.User;
 import br.com.moreira.desafiopetize.domain.repositories.UserRepository;
+import br.com.moreira.desafiopetize.domain.services.UserAuthenticated;
+import br.com.moreira.desafiopetize.exceptions.UsernameNotFoundException;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -20,12 +22,12 @@ public class JwtToUserConverter implements Converter<Jwt, UsernamePasswordAuthen
 
     @Override
     public UsernamePasswordAuthenticationToken convert(Jwt jwt) {
-        User user = userRepository.findByUsername(jwt.getSubject()).orElse(null);
+        User user = userRepository.findByUsername(jwt.getSubject())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        if (user != null) {
-            return new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList());
-        }
+        UserAuthenticated userDetails = new UserAuthenticated(user);
 
-        return null;
+        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
     }
 }
