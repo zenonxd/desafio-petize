@@ -1,6 +1,7 @@
 package br.com.moreira.desafiopetize.interfaces.dtos;
 
 import br.com.moreira.desafiopetize.domain.enums.TaskStatus;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 
 import java.io.Serializable;
@@ -11,18 +12,31 @@ import java.util.Date;
  * DTO for {@link br.com.moreira.desafiopetize.domain.entities.Task}
  */
 public record CreateTaskRequestDto(
-        @NotNull(message = "Title can't be null.") @NotEmpty(message = "Title can't be empty.") @NotBlank(message = "Title can't be blank.") String title,
-        @NotNull(message = "Description can't be null.") @Size(message = "Description must have more than 5 characters.", min = 5) @NotEmpty(message = "Description can't be empty.") @NotBlank(message = "Description can't be blank.") String description,
-        @NotNull(message = "Priority can't be null.") @Positive(message = "Only positive number allowed.") Integer priority,
-        @NotNull(message = "Date can't be null.") @FutureOrPresent LocalDate dueDate,
-        Long parentId) implements Serializable {
+        @Schema(description = "Task Title", example = "Travel to São Paulo")
+        @NotBlank(message = "Title can't be blank.")
+        String title,
 
-    public CreateTaskRequestDto(String title, String description, Integer priority, LocalDate dueDate, Long parentId) {
+
+        @Schema(description = "Task Description", example = "Work trip.")
+        @Size(message = "Description must have more than 5 characters.", min = 5)
+        @NotBlank(message = "Description can't be blank.")
+        String description,
+
+        @Schema(description = "Task Priority", example = "1")
+        @NotNull(message = "Priority can't be null.")
+        @Positive(message = "Only positive number allowed.")
+        Integer priority,
+
+        @Schema(description = "When the task is gonna expire.", example = "2025-10-20")
+        @NotNull(message = "Date can't be null.")
+        @FutureOrPresent
+        LocalDate dueDate) implements Serializable {
+
+    public CreateTaskRequestDto(String title, String description, Integer priority, LocalDate dueDate) {
         this.title = title;
         this.description = description;
         this.priority = priority;
         this.dueDate = dueDate;
-        this.parentId = parentId;
     }
 
     @Override
@@ -46,10 +60,6 @@ public record CreateTaskRequestDto(
         return dueDate;
     }
 
-    @Override
-    public Long parentId() {
-        return parentId;
-    }
 
 
     @Override
@@ -59,7 +69,6 @@ public record CreateTaskRequestDto(
                 ", description='" + description + '\'' +
                 ", priority=" + priority +
                 ", dueDate=" + dueDate +
-                ", parentId=" + parentId +
                 '}';
     }
 }

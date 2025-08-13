@@ -3,9 +3,13 @@ package br.com.moreira.desafiopetize.interfaces.controllers;
 import br.com.moreira.desafiopetize.domain.entities.User;
 import br.com.moreira.desafiopetize.domain.enums.TaskStatus;
 import br.com.moreira.desafiopetize.domain.services.TaskService;
+import br.com.moreira.desafiopetize.interfaces.dtos.CreateSubTaskDTO;
 import br.com.moreira.desafiopetize.interfaces.dtos.CreateTaskRequestDto;
 import br.com.moreira.desafiopetize.interfaces.dtos.TaskResponseDTO;
 import br.com.moreira.desafiopetize.interfaces.dtos.UpdateTaskStatusRequestDTO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +35,12 @@ public class TaskController {
     }
 
     @PostMapping
+    @Operation(summary = "Create a new task", description = "Create a new task to a User that has authorization.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Task created successfully."),
+            @ApiResponse(responseCode = "400", description = "Bad request."),
+            @ApiResponse(responseCode = "401", description = "Unauthorized."),
+    })
     public ResponseEntity<TaskResponseDTO> createTask(@Valid @RequestBody CreateTaskRequestDto dto,
                                                       Authentication authentication) {
 
@@ -45,6 +55,32 @@ public class TaskController {
                 .toUri();
 
         return ResponseEntity.created(location).body(newTask);
+    }
+
+    @PostMapping("/{parentId}/subtasks")
+    @Operation(summary = "Create a new subtask", description = "Create a new subtask, associating to a parent task. Need authorization")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Subtask created successfully."),
+            @ApiResponse(responseCode = "400", description = "Invalid Data."),
+            @ApiResponse(responseCode = "401", description = "Unauthorized."),
+            @ApiResponse(responseCode = "404", description = "Parent Task not found."),
+    })
+    public ResponseEntity<TaskResponseDTO> createSubtask(
+            @PathVariable Long parentId,
+            @Valid @RequestBody CreateSubTaskDTO dto,
+            Authentication authentication) {
+
+        User loggedUser = (User) authentication.getPrincipal();
+
+        TaskResponseDTO newSubtask = taskService.createSubtask(parentId, dto, loggedUser);
+
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentContextPath().path("/api/tasks/{id}")
+                .buildAndExpand(newSubtask.id())
+                .toUri();
+
+        return ResponseEntity.created(location).body(newSubtask);
     }
 
     @GetMapping

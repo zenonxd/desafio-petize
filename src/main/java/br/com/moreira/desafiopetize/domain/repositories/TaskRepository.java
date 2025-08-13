@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
     boolean existsByTitleAndDueDate(String title, LocalDate dueDate);
@@ -18,4 +19,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     @Query("SELECT CASE WHEN COUNT(t) > 0 THEN TRUE ELSE FALSE END FROM Task t WHERE t.parentTask = :parentTask AND t.status <> :status")
     boolean existsByParentTaskAndStatusNot(@Param("parentTask") Task parentTask, @Param("status") TaskStatus status);
+
+
 }

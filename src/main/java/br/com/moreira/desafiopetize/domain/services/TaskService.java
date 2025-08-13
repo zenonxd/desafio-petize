@@ -8,6 +8,7 @@ import br.com.moreira.desafiopetize.domain.repositories.AttachmentRepository;
 import br.com.moreira.desafiopetize.domain.repositories.TaskRepository;
 import br.com.moreira.desafiopetize.domain.services.mapper.TaskMapper;
 import br.com.moreira.desafiopetize.exceptions.*;
+import br.com.moreira.desafiopetize.interfaces.dtos.CreateSubTaskDTO;
 import br.com.moreira.desafiopetize.interfaces.dtos.CreateTaskRequestDto;
 import br.com.moreira.desafiopetize.interfaces.dtos.TaskResponseDTO;
 import br.com.moreira.desafiopetize.interfaces.dtos.UpdateTaskStatusRequestDTO;
@@ -41,23 +42,37 @@ public class TaskService {
     }
 
 
+    @Transactional
     public TaskResponseDTO createTask(@Valid CreateTaskRequestDto dto, User loggedUser) {
         Task newTask = taskMapper.toEntity(dto);
 
         newTask.setStatus(TaskStatus.PENDENT);
         newTask.setUser(loggedUser);
-
-        if (dto.parentId() != null) {
-            Task parentTask = taskRepository.findById(dto.parentId())
-                    .orElseThrow(() -> new ParentTaskNotFoundException("Parent task not found with id: " + dto.parentId()));
-            newTask.setParentTask(parentTask);
-        }
+        newTask.setParentTask(null);
 
         validateEntity(newTask);
 
         Task savedTask = taskRepository.save(newTask);
 
         return taskMapper.toResponseDTO(savedTask);
+    }
+
+    @Transactional
+    public TaskResponseDTO createSubtask(Long parentId, @Valid CreateSubTaskDTO dto, User loggedUser) {
+        Task parentTask = taskRepository.findById(parentId)
+                .orElseThrow(() -> new ParentTaskNotFoundException("Task parent not found."));
+
+
+        Task newSubTask = taskMapper.toEntity(dto);
+
+        newSubTask.setStatus(TaskStatus.PENDENT);
+        newSubTask.setUser(loggedUser);
+        newSubTask.setParentTask(parentTask);
+
+        Task savedSubtask = taskRepository.save(newSubTask);
+
+        return taskMapper.toResponseDTO(savedSubtask);
+
     }
 
     public Page<TaskResponseDTO> listTask(TaskStatus status, Integer priority,
@@ -82,7 +97,7 @@ public class TaskService {
     public TaskResponseDTO updateTask(Long id, TaskStatus newStatus) {
         //arrumar excep
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new TaskNotFoundException("Task not found."));
+                .orElseThrow(() -> new TaskNotFoundException("Task with id " + id + " not found"));
 
         if (newStatus == TaskStatus.COMPLETED) {
 
@@ -114,12 +129,16 @@ public class TaskService {
 
     public TaskResponseDTO findTaskById(Long id) {
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new TaskNotFoundException("Task not found"));
+                .orElseThrow(() -> new TaskNotFoundException("Task with id " + id + " not found"));
 
         return taskMapper.toResponseDTO(task);
     }
 
     public void deleteTask(Long id) {
+        if (!taskRepository.existsById(id)) {
+            throw new TaskNotFoundException("Task with id " + id + " not found");
+        }
+
         taskRepository.deleteById(id);
     }
 
@@ -145,4 +164,6 @@ public class TaskService {
         attachmentRepository.save(attachment);
 
     }
+
+
 }

@@ -1,14 +1,33 @@
 package br.com.moreira.desafiopetize.domain.services.mapper;
 
 import br.com.moreira.desafiopetize.domain.entities.Task;
+import br.com.moreira.desafiopetize.interfaces.dtos.CreateSubTaskDTO;
 import br.com.moreira.desafiopetize.interfaces.dtos.CreateTaskRequestDto;
 import br.com.moreira.desafiopetize.interfaces.dtos.TaskResponseDTO;
 import org.springframework.stereotype.Component;
 
+import java.util.stream.Collectors;
+
 @Component
 public class TaskMapper {
 
+    // converts dto to task parent
     public Task toEntity(CreateTaskRequestDto dto) {
+        if (dto == null) {
+            return null;
+        }
+
+        Task task = new Task();
+        task.setTitle(dto.title());
+        task.setDescription(dto.description());
+        task.setPriority(dto.priority());
+        task.setDueDate(dto.dueDate());
+
+        return task;
+    }
+
+    // dto to subtask
+    public Task toEntity(CreateSubTaskDTO dto) {
         if (dto == null) {
             return null;
         }
@@ -35,7 +54,11 @@ public class TaskMapper {
                 entity.getPriority(),
                 entity.getDueDate(),
                 entity.getUser().getId(),
-                entity.getUser().getUsername()
+                entity.getUser().getUsername(),
+
+                entity.getSubTask().stream()
+                        .map(this::toResponseDTO)
+                        .collect(Collectors.toList())
         );
     }
 }
