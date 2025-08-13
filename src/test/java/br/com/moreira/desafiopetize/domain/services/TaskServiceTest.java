@@ -66,11 +66,13 @@ public class TaskServiceTest {
     @DisplayName("Should create a Parent Task with success")
     void createParentTask_ShouldReturnTaskResponseDTO_WhenSuccessful() {
 
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
+
         when(taskMapper.toEntity(taskRequestDto)).thenReturn(task);
         when(taskRepository.save( any(Task.class))).thenReturn(task);
         when(taskMapper.toResponseDTO(task)).thenReturn(taskResponseDTO);
 
-        TaskResponseDTO result = taskService.createTask(taskRequestDto, String.valueOf(user));
+        TaskResponseDTO result = taskService.createTask(taskRequestDto, "testuser");
 
         assertNotNull(result);
         assertEquals(taskResponseDTO.id(), result.id());

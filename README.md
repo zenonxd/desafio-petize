@@ -1,36 +1,3 @@
-# Funcionalidades Obrigatórias:
-
-~~- Criar tarefa com título, descrição, data de vencimento, status e prioridade.~~
-
-~~- Listar tarefas com filtros por status, prioridade e vencimento.~~
-
-~~- Atualizar o status da tarefa.~~
-
-~~- Deletar tarefa.~~
-
-~~- Impedir conclusão de tarefa com subtarefas pendentes.~~
-
-
-# Funcionalidades Opcionais (Diferenciais):
-
-~~- Autenticação JWT com rotas protegidas.~~
-
-~~- Associações de tarefas por usuário autenticado.~~
-
-~~- Validação com @Valid e mensagens claras.~~
-
-~~- Documentação com Swagger ou README completo.~~
-
-- Testes unitários e de integração.
-
-~~- Docker Compose com banco de dados.~~
-
-~~- Paginação, ordenação e upload de anexo.~~
-
-# Entrega:
-
-- Vídeo explicativo (opcional).
-
 # Desafio Petize - API de Gerenciamento de Tarefas
 
 API RESTful para gerenciamento de tarefas (To-do list) com um sistema completo de autenticação e autorização via JSON 
@@ -60,6 +27,7 @@ Web Tokens (JWT), construída com Java e Spring Boot.
 * Flyway: Para gerenciamento de migrações do banco de dados.
 * Maven: Para gerenciamento de dependências e build do projeto.
 * JJWT (Java JWT): Para geração e validação de JSON Web Tokens.
+* JUnit e Mockito para testes de integração e unitários.
 
 ## 🚀 Como Executar o Projeto
 
