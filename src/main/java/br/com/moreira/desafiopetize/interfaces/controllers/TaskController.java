@@ -13,6 +13,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
@@ -82,6 +83,17 @@ public class TaskController {
         taskService.deleteTask(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/attachments")
+    public ResponseEntity<String> uploadAttachment(@PathVariable Long id,
+                                                   @RequestParam("file")MultipartFile file,
+                                                   Authentication authentication) {
+        User loggedUser = (User) authentication.getPrincipal();
+
+        taskService.storeAttachment(id, file, loggedUser);
+
+        return ResponseEntity.ok("File uploaded successfully.");
     }
 
 }
