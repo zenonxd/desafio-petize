@@ -1,5 +1,6 @@
 package br.com.moreira.desafiopetize.domain.services.mapper;
 
+import br.com.moreira.desafiopetize.domain.entities.Attachment;
 import br.com.moreira.desafiopetize.domain.entities.Task;
 import br.com.moreira.desafiopetize.interfaces.dtos.CreateSubTaskDTO;
 import br.com.moreira.desafiopetize.interfaces.dtos.CreateTaskRequestDto;
@@ -10,6 +11,12 @@ import java.util.stream.Collectors;
 
 @Component
 public class TaskMapper {
+
+    private final AttachmentMapper attachmentMapper;
+
+    public TaskMapper(AttachmentMapper attachmentMapper) {
+        this.attachmentMapper = attachmentMapper;
+    }
 
     // converts dto to task parent
     public Task toEntity(CreateTaskRequestDto dto) {
@@ -58,7 +65,11 @@ public class TaskMapper {
 
                 entity.getSubTask().stream()
                         .map(this::toResponseDTO)
-                        .collect(Collectors.toList())
+                        .collect(Collectors.toSet()),
+
+                entity.getAttachments().stream()
+                        .map(attachmentMapper::toResponseDTO)
+                        .collect(Collectors.toSet())
         );
     }
 }

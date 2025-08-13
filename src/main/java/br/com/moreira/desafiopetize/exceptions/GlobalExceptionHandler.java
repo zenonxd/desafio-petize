@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleAccessDenied(AccessDeniedException ex) {
         ApiError body = new ApiError(
                 HttpStatus.FORBIDDEN.value(),
-                "Acesso negado. Você não tem permissão para executar esta ação.",
+                "Access Denied. You don't have permission to perform this action.",
                 LocalDateTime.now()
         );
         return new ResponseEntity<>(body, HttpStatus.FORBIDDEN);
@@ -61,7 +61,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleErrorStoringFile(ErrorStorageFileException ex) {
         ApiError body = new ApiError(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Ocorreu um erro no servidor ao tentar salvar o arquivo.",
+                "Erro trying to save the file.",
                 LocalDateTime.now()
         );
         return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -81,7 +81,7 @@ public class GlobalExceptionHandler {
 
         ApiError body = new ApiError(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Ocorreu um erro inesperado no servidor.",
+                "An unexpected server error occurred.",
                 LocalDateTime.now()
         );
         return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);

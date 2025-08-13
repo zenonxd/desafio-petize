@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 public record TaskResponseDTO(
 
@@ -33,6 +34,8 @@ public record TaskResponseDTO(
         String username,
 
         @Schema(description = "Subtasks")
-        List<TaskResponseDTO> subTasks
+        Set<TaskResponseDTO> subTasks,
+
+        Set<AttatchmentResponseDTO> attatchments
 ) {
 }

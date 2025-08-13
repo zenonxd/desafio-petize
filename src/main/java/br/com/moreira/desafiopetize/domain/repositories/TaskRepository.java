@@ -20,5 +20,10 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     @Query("SELECT CASE WHEN COUNT(t) > 0 THEN TRUE ELSE FALSE END FROM Task t WHERE t.parentTask = :parentTask AND t.status <> :status")
     boolean existsByParentTaskAndStatusNot(@Param("parentTask") Task parentTask, @Param("status") TaskStatus status);
 
+    @Query("SELECT t FROM Task t " +
+            "LEFT JOIN FETCH t.subTask " +
+            "LEFT JOIN FETCH t.attachments " +
+            "WHERE t.id = :id")
+    Optional<Task> findByIdWithDetails(@Param("id") Long id);
 
 }

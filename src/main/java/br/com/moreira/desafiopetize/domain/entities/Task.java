@@ -6,9 +6,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Table(name = "tb_task")
@@ -41,7 +39,10 @@ public class Task {
             orphanRemoval = true
     )
     @JsonManagedReference // evita loop tambem
-    private List<Task> subTask = new ArrayList<>();
+    private Set<Task> subTask = new HashSet<>();
+
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Attachment> attachments = new HashSet<>();
 
     public Task() {}
 
@@ -119,11 +120,19 @@ public class Task {
         this.parentTask = parentTask;
     }
 
-    public List<Task> getSubTask() {
+    public Set<Task> getSubTask() {
         return subTask;
     }
 
-    public void setSubTask(List<Task> subTask) {
+    public void setSubTask(Set<Task> subTask) {
         this.subTask = subTask;
+    }
+
+    public Set<Attachment> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(Set<Attachment> attachments) {
+        this.attachments = attachments;
     }
 }
