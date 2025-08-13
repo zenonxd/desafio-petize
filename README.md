@@ -114,7 +114,7 @@ A API está protegida com JWT. Para acessar a maioria dos endpoints, você prime
 **Abaixo, url do environment do Postman, contendo variáveis de ambiente e um script para alocar o token gerado para cada
 requisição.**
 
-[Link Environment]() 
+[Link Environment](https://drive.google.com/file/d/1hD7wO9GYZrIHf4A3DYshheJ0KvyIJEy3/view?usp=sharing) 
 
 1. Autenticação (Login)
 
@@ -161,7 +161,7 @@ Criamos a classe "UserAuthenticated" que estende essa interface do UserDetails.
 
 Injetamos a entidade User por meio de construtor, e implementamos os métodos da interface.
 
-[Veja a classe aqui]()
+[Veja a classe aqui](https://github.com/zenonxd/desafio-petize/blob/master/src/main/java/br/com/moreira/desafiopetize/domain/services/UserAuthenticated.java)
 
 ## UserDetailsServiceImpl
 
@@ -171,7 +171,7 @@ Ela será responsável por buscar e retornar o UserDetails pelo username.
 
 Além disso, ela é chamada automaticamente durante a autenticação para retornar o UserDetails.
 
-[Veja a classe aqui]()
+[Veja a classe aqui](https://github.com/zenonxd/desafio-petize/blob/06ba08e74c1172df398ea8cea0b0dd4849f2952c/src/main/java/br/com/moreira/desafiopetize/domain/services/UserDetailsServiceImpl.java#L10)
 
 ## JwtService
 
@@ -180,7 +180,7 @@ Essa classe é IMPORTANTÍSSIMA, responsável por criar e assinar JWT para um Us
 Utilizei e injetei nela o JwtEnconder, do OAuth2 Resource Server. Mesmo não usando OAuth, a gente utiliza a capacidade do servidor de recurso para codificar
 e decodificar um token JWT.
 
-[Veja a classe aqui]()
+[Veja a classe aqui](https://github.com/zenonxd/desafio-petize/blob/06ba08e74c1172df398ea8cea0b0dd4849f2952c/src/main/java/br/com/moreira/desafiopetize/domain/services/JwtService.java)
 
 
 ## Security Config
@@ -192,4 +192,4 @@ Essa classe irá habilitar a segurança do projeto como, por exemplo, configuran
 
 Faz enconde e decode do JWT, settará autorização de rotas, etc.
 
-[Veja a classe aqui]()
+[Veja a classe aqui](https://github.com/zenonxd/desafio-petize/blob/06ba08e74c1172df398ea8cea0b0dd4849f2952c/src/main/java/br/com/moreira/desafiopetize/config/SecurityConfig.java)
